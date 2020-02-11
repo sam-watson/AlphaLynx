@@ -1,0 +1,235 @@
+{% extends "AppInfoPage.html" %}
+
+{% block title %}Transfers{% endblock %}
+
+{% set active_page = "" %}
+
+{% block head %}
+    {{ super() }}
+    <link rel="stylesheet" href="/static/webfont/cryptocoins.css">
+    <link rel="stylesheet" href="/static/webfont/cryptocoins-colors.css">
+
+    <style>
+    @font-face {
+      font-family: "cryptocoins";
+      src: url('/static/webfont/cryptocoins.woff2') format('woff2'),
+           url('/static/webfont/cryptocoins.woff') format('woff'),
+           url('/static/webfont/cryptocoins.ttf') format('truetype');
+    }
+    .layout {
+        display: grid;
+        grid-template:
+            "deposit balances" auto
+            "withdraw balances" auto
+            "history history" auto
+            / 50% 50%;
+        grid-gap: 15px;
+    }
+    .layout > * {
+        padding: 0px 20px 20px;
+        background-color: var(--card-color);
+        place-self: stretch;
+    }
+
+    #deposit { grid-area: deposit }
+    #withdraw { grid-area: withdraw }
+    #balances { grid-area: balances }
+    #history { grid-area: history }
+    #depositCoin {
+        background-color: transparent;
+    }
+    #coinPick {
+        width: 400px;
+    }
+    .coin-pick {
+        font-family: "cryptocoins", 'Open Sans', sans-serif;
+        font-size: 150%;
+    }
+    #depositBtn {
+        margin: 0px 10px;
+        align-self: center;
+    }
+    #withdrawBtn {
+        align-self: normal;
+    }
+    .centered-group {
+        display: flex;
+        flex-flow: column;
+    }
+
+    </style>
+{% endblock %}
+
+{% block info %}
+    {{ super() }}
+
+
+    <h2 class="title">Fund Transfers</h2>
+    <div class="layout">
+        <!--<div id="forms">-->
+            <div id="deposit" class="centered-group">
+                <h3>Deposit</h3>
+                <form id="depositCoin" action="/" method="post">
+                    <select id="depositCoinPick" class="coin-pick" name="currency">
+                    {% for currency in currencies_deposit %}
+                        <option class="cc {{currency[0]}}" value="{{currency[0]}}">
+                            {% if currencyChars[currency[0]][1] %} &#x{{currencyChars[currency[0]][1]}} {% endif %} {{currency[1]}} ({{currency[0]}})
+                        </option>
+                    {% endfor %}
+                    </select>
+                </form>
+                <h5>Send Deposits to this Address</h5>
+                <!--<div class="centered-group">-->
+                    <input id="depositAddress" class="address-box" type="text" placeholder="Deposit Address" readonly="readonly">
+                    <button id="depositBtn" type="button" class="btn">Generate New Address</button>
+                <!--</div>-->
+            </div>
+
+            <div id="withdraw" class="centered-group">
+                <h3>Withdraw</h3>
+                <form id="withdrawCoin" action="/" method="post">
+                    <select id="withdrawCoinPick" class="coin-pick" name="currency">
+                    {% for currency in currencies_withdraw %}
+                        <option class="cc {{currency[0]}}" value="{{currency[0]}}">
+                            {% if currencyChars[currency[0]][1] %} &#x{{currencyChars[currency[0]][1]}} {% endif %} {{currency[1]}} ({{currency[0]}})
+                        </option>
+                    {% endfor %}
+                    </select>
+                </form>
+                <h5>Paste an Outside Address to Accept Transfers</h5>
+                <input id="withdrawAddress" class="address-box" type="text" placeholder="Withdrawal Destination Address" name="withdrawDestination">
+                <h5>Enter a Transfer Amount</h5>
+                <div>
+                    <input id="withdrawAmount" type="number" placeholder="Withdrawal Amount" name="withdrawAmount" value="0">
+                    <button id="withdrawBtn" type="button" class="btn">Transfer</button>
+                </div>
+            </div>
+        <!--</div>-->
+
+        <div id="balances">
+            <h3>Current Balances</h3>
+            <table class="table table-bordered">
+                <thead>
+                    <td>Currency</td><td>Balance</td>
+                </thead>
+                <tbody>
+                    {% for h in holdings %}
+                    <tr>
+                        {% for i in h %}
+                        <td>
+                            {{i}}
+                        </td>
+                        {% endfor %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div id="history">
+            <h3>History</h3>
+            <table class="table table-bordered">
+                <thead>
+                    <td>Time</td>
+                    <td>Transfer Type</td>
+                    <td>Amount</td>
+                    <td>Currency</td>
+                </thead>
+                <tbody>
+                    {% for t in transferhist %}
+                    <tr>
+                        {% for i in t %}
+                        <td>
+                            {{i}}
+                        </td>
+                        {% endfor %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+<script>
+    var depositCoinPick = document.getElementById('depositCoinPick');
+    var depositBtn = document.getElementById('depositBtn');
+    var depositAddr = document.getElementById('depositAddress');
+    var withdrawBtn = document.getElementById('withdrawBtn');
+    var withdrawAddr = document.getElementById('withdrawAddr');
+
+    var infoUrl = '{{info_url}}' + 'api/info/';
+
+    function GetNewDepositAddress() {
+        var id = sessionStorage.getItem('customerId');
+        var formData = new FormData();
+        formData.append('CustomerID', id);
+        formData.append('Currency', depositCoinPick.value);
+        formData.append('button', 'Generate');
+
+        fetch(window.location, {
+            method: 'post',
+            body: formData
+        }).then(function(response) {return response.json();})
+        .then(function(data) {
+            if (data.address) {
+                depositAddr.value = data.address;
+                depositBtn.disabled = true;
+            }
+        });
+    };
+
+    function GetDepositAddress() {
+        var id = sessionStorage.getItem('customerId');
+        var formData = new FormData();
+        formData.append('CustomerID', id);
+        formData.append('Currency', depositCoinPick.value);
+
+        fetch(infoUrl + 'getwalletaddress', {
+            method: 'post',
+            body: formData
+        }).then(function(response) {return response.json();})
+        .then(function(data) {
+            if (data.address != 'None') {
+                depositBtn.disabled = true;
+                depositAddr.value = data.address;
+            } else {
+                depositAddr.value = '';
+                depositBtn.disabled = false;
+            }
+        });
+    };
+
+    function WithdrawAmount() {
+        var id = sessionStorage.getItem('customerId');
+        var formData = new FormData();
+        formData.append('CustomerID', id);
+        formData.append('Currency', withdrawCoinPick.value);
+
+        fetch(infoUrl + 'getwalletaddress', {
+            method: 'post',
+            body: formData
+        }).then(function(response) {return response.json();})
+        .then(function(data) {
+
+        });
+    };
+
+    depositBtn.addEventListener('click', function() {
+        GetNewDepositAddress();
+    });
+
+    depositCoinPick.addEventListener('change', function() {
+        GetDepositAddress();
+        depositCoinPick.className = 'cc ' + coinPick.value;
+    });
+
+    function Init() {
+        GetDepositAddress();
+        depositCoinPick.className = 'cc ' + coinPick.value;
+    };
+
+    window.onload = Init;
+
+</script>
+
+{% endblock %}

@@ -1,0 +1,472 @@
+{% extends "AppNavBase.html" %}
+
+{% block title %}BitLynx Dashboard{% endblock %}
+
+{% set active_page = "account" %}
+
+{% block head %}
+    {{ super() }}
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.js'></script>
+
+    <style>
+        .content {
+            padding-top: 20px;
+            overflow-y: auto;
+        }
+
+        .holdings {
+            grid-area: holdings;
+            min-width: 0;
+            place-self: stretch stretch;
+        }
+        #perf-chart {
+            grid-area: performance;
+            min-width: 0;
+            place-self: stretch stretch;
+            position: relative;
+        }
+        #perfPick {
+            position: absolute;
+            right: 0px;
+            top: 0px;
+            margin-top: 10px;
+            border: 0px;
+            background: #ecececa8;
+        }
+        #port-chart {
+            grid-area: portfolio;
+            min-width: 0;
+            place-self: stretch stretch;
+        }
+        .market {
+            grid-area: market;
+            min-width: 0;
+            place-self: stretch stretch;
+            overflow: hidden;
+        }
+        .layout > div {
+            min-width: 400px;
+            padding: 0px 20px 0px;
+            place-self: stretch;
+        }
+
+        .layout {
+            display: grid;
+            grid-template-columns: 50% auto;
+            grid-template-rows: 50% auto;
+            grid-template-areas:
+                "performance portfolio"
+                "holdings market";
+            grid-gap: 25px 25px;
+
+            padding: 10px 50px;
+            flex-grow: 1;
+            min-height: 0;
+            min-width: 0;
+        }
+        .horz-layout {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-evenly;
+            height: 100%;
+            width: 100%;
+        }
+        .vert-layout {
+            display: flex;
+            flex-direction: column;
+            flex-wrap: no-wrap;
+            height: 100%;
+        }
+        .vert-layout.holdings {
+            align-items: center;
+        }
+
+        .chart {
+            margin: 20px 50px;
+        }
+
+        .title {
+            margin: 20px 0px;
+            font-weight: bold;
+        }
+        .info {
+            background: var(--card-color);
+            min-height: 300px;
+            display: flex;
+            flex-flow: column;
+            justify-content: stretch;
+            align-items: stretch;
+        }
+        .info-header {
+            display: flex;
+            justify-content: space-between;
+        }
+        .info-header > div > button {
+            margin-top: 10px;
+        }
+        #holdings > * {
+            padding: 10px;
+        }
+        #holdings {
+            display: grid;
+            grid-template:
+                'text value' auto
+                'holdings holdings' auto
+                / 1fr 120px;
+        }
+        .balance-text {
+            grid-area: text;
+            background-image: linear-gradient(-10deg, #1eff1e 0%, green 50%);
+            color: white;
+        }
+        .balance-value {
+            grid-area: value;
+            background-image: linear-gradient(-10deg, #1eff1e 0%, green 100%);
+            color: white;
+        }
+        .holdings table {
+            table-layout: fixed;
+            grid-area: holdings;
+            width: calc(100% - 10px);
+            margin: 5px 10px 0px;
+        }
+        .holdings table * {
+            padding: 1px !important;
+        }
+        .holdings table, th, td {
+            border: 1px solid black;
+            border-collapse: collapse;
+        }
+        #marketcaps {
+            height: 300px;
+        }
+        #marketcaps > * {
+            flex: 1;
+        }
+        .acctBal {
+            font-size: 115%;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    {{ super() }}
+    <div class="layout">
+        <div id="port-chart" class="info">
+            <h4 class="title">PORTFOLIO</h4>
+            <div class="chart">
+                <canvas id="chart1" class="chartjs-render-monitor" width="400" height="200"></canvas>
+                <script>
+                    var config = {
+                        type: 'pie',
+                        data: {
+                            datasets: [{
+                                data: [
+                                    {% for item, label, colors in set %}
+                                        {{item}},
+                                    {% endfor %}
+                                ],
+                                backgroundColor: [
+                                    {% for item, label, colors in set %}
+                                        "{{colors}}",
+                                    {% endfor %}
+                                ],
+                                label: 'Allocations'
+                            }],
+                            labels: [
+                                {% for item, label, colors in set %}
+                                    "{{label}}",
+                                {% endfor %}
+                            ]
+                        },
+                        options: {
+                            title: {
+                                display: false,
+                                text: 'Positions',
+                                fontSize: 22
+                            },
+                            responsive: true,
+                            legend: {
+                                display: true,
+                                position: 'right',
+                                labels: {
+                                    generateLabels: function(chart) {
+                                        var data = chart.data;
+                                        if (data.labels.length && data.datasets.length) {
+                                            return data.labels.map(function(label, i) {
+                                                var meta = chart.getDatasetMeta(0);
+                                                var ds = data.datasets[0];
+                                                var arc = meta.data[i];
+                                                var custom = arc && arc.custom || {};
+                                                var getValueAtIndexOrDefault = Chart.helpers.getValueAtIndexOrDefault;
+                                                var arcOpts = chart.options.elements.arc;
+                                                var fill = custom.backgroundColor ? custom.backgroundColor : getValueAtIndexOrDefault(ds.backgroundColor, i, arcOpts.backgroundColor);
+                                                var stroke = custom.borderColor ? custom.borderColor : getValueAtIndexOrDefault(ds.borderColor, i, arcOpts.borderColor);
+                                                var bw = custom.borderWidth ? custom.borderWidth : getValueAtIndexOrDefault(ds.borderWidth, i, arcOpts.borderWidth);
+
+                                                // We get the value of the current label
+                                                var value = chart.config.data.datasets[arc._datasetIndex].data[arc._index].toFixed(2);
+
+                                                return {
+                                                    // Instead of `text: label,`
+                                                    // We add the value to the string
+                                                    text: label + " : $" + value,
+                                                    fillStyle: fill,
+                                                    strokeStyle: stroke,
+                                                    lineWidth: bw,
+                                                    hidden: isNaN(ds.data[i]) || meta.data[i].hidden,
+                                                    index: i
+                                                };
+                                            });
+                                        } else {
+                                            return [];
+                                        }
+                                    }
+                                }
+                            },
+                            tooltips: {
+                                enabled: true,
+                                mode: 'single',
+                                callbacks: {
+                                  label: function(tooltipItem, data) {
+                                    var label = data.labels[tooltipItem.index];
+                                    var datasetLabel = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index].toFixed(2);
+                                    return label + ': ' + '$' + datasetLabel;
+                                  }
+                                }
+                            }
+                        }
+                    };
+
+                    var ctx = document.getElementById('chart1').getContext('2d');
+                    new Chart(ctx, config);
+                </script>
+            </div>
+        </div>
+
+        <div id="perf-chart" class="info">
+            <div class="info-header">
+                <h4 class="title">PERFORMANCE</h4>
+                <div class="dropdown">
+                    <button class="dropdown-toggle btn btn-link" data-toggle="dropdown" href="#">
+                        <b>&bull; &bull; &bull;</b></button>
+                    <ul id="perfChartTime" class="dropdown-menu dropdown-menu-right">
+                        <li><a href="#" onclick="LoadPerfChart('day')">Day</a></li>
+                        <li><a href="#" onclick="LoadPerfChart('month')">Month</a></li>
+                        <li><a href="#" onclick="LoadPerfChart('three months')">Three Months</a></li>
+                        <li><a href="#" onclick="LoadPerfChart('year')">Year</a></li>
+                        <li><a href="#" onclick="LoadPerfChart('all time')">All Time</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="chart">
+                <canvas id="chart2" class="chartjs-render-monitor" width="400" height="200"></canvas>
+                <script>
+                    var h = 0;
+                    var l = 10000000000000000000;
+                    {% for item in values %}
+                        h = Math.max(h, {{item}});
+                        l = Math.min(l, {{item}});
+                    {% endfor %}
+
+                    Chart.pluginService.register({
+                        beforeDraw: function (chart, easing) {
+                            if (chart.config.options.chartArea && chart.config.options.chartArea.backgroundColor) {
+                                var helpers = Chart.helpers;
+                                var ctx = chart.chart.ctx;
+                                var chartArea = chart.chartArea;
+
+                                ctx.save();
+                                ctx.fillStyle = chart.config.options.chartArea.backgroundColor;
+                                ctx.fillRect(chartArea.left, chartArea.top, chartArea.right - chartArea.left, chartArea.bottom - chartArea.top);
+                                ctx.restore();
+                            }
+                        }
+                    });
+
+                    var ctx2 = document.getElementById('chart2').getContext('2d');
+
+                    var gradient = ctx2.createLinearGradient(0, 0, 0, 200);
+                    gradient.addColorStop(1, 'rgba(255,190,0, 1)');
+                    gradient.addColorStop(0, 'rgba(255,190,0, 0.2)');
+
+                    var config2 = {
+                        type: 'line',
+                        data: {
+                            labels: [
+                                {% for item in labels %}
+                                "{{ item }}",
+                                {% endfor %}
+                            ],
+                            datasets: [{
+                                label: '',
+                                backgroundColor: gradient,
+                                borderColor: "#ff6c23",
+                                pointBackgroundColor: "#ff0000",
+                                pointBorderColor: "#ff6c23",
+                                pointHighlightBackground: "#fff",
+                                pointHighlightBorder: "#ff6c23",
+                                <!--backgroundColor: '#ff0000',-->
+                                <!--borderColor: '#ff0000',-->
+                                data: [
+                                    {% for item in values %}
+                                    {{ item }}, {% endfor %}
+                                ],
+                                fill: true,
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            title: {
+                                display: false,
+                                text: 'Performance'
+                            },
+                            tooltips: {
+                                mode: 'index',
+                                intersect: false,
+                            },
+                            hover: {
+                                mode: 'nearest',
+                                intersect: true,
+                            },
+                            legend: {
+                                display: false
+                            },
+                            chartArea: {
+                                backgroundColor: '#ecececa8'
+                            },
+                            scales: {
+                                xAxes: [{
+                                    display: true,
+                                    scaleLabel: {
+                                        display: false,
+                                        labelString: 'Time'
+                                    }
+                                }],
+                                yAxes: [{
+                                    display: true,
+                                    stacked: false,
+                                    ticks: {
+                                        beginAtZero: true,
+                                        suggestedMax: h * 1.1,
+                                        suggestedMin: l * 0.9,
+                                    },
+                                    scaleLabel: {
+                                        display: false,
+                                        labelString: 'Dollar Value'
+                                    }
+                                }]
+                            }
+                        }
+                    };
+
+                    var ctx2 = document.getElementById('chart2').getContext('2d');
+                    new Chart(ctx2, config2);
+
+                </script>
+            </div>
+        </div>
+
+        <div class="holdings info">
+            <h4 class="title">BALANCES</h4>
+            <div id="holdings">
+                <div class="balance-text"><strong> The value of your account is </strong></div>
+                <div class="balance-value"><strong class="acctBal">${{ dollar_value }}</strong></div>
+                <table class="table table-bordered">
+                    <thead>
+                    <tr>
+                        <td><b>Asset</b></td>
+                        <td><b>Amount</b></td>
+                        <td><b>Value (USD)</b></td>
+                    </tr>
+                    </thead>
+                    {% for h in holdings %}
+                    <tr>
+                        {% for i in h %}
+                        <td>
+                            {{i}}
+                        </td>
+                        {% endfor %}
+                    </tr>
+                    {% endfor %}
+                </table>
+            </div>
+        </div>
+
+        <div class="market info">
+            <!--<iframe class="market" src="https://coinmarketcap.com/gainers-losers/"></iframe>-->
+
+            <h4 class="title">MARKET</h4>
+            <div id="marketcaps">
+
+                <!--<script type="text/javascript" src="https://files.coinmarketcap.com/static/widget/currency.js"></script>-->
+                <!--<div class="coinmarketcap-currency-widget" data-currencyid="1" data-base="USD" data-secondary=""-->
+                     <!--data-ticker="true" data-rank="true" data-marketcap="true" data-volume="true" data-stats="USD"-->
+                     <!--data-statsticker="false"></div>-->
+
+                <!--<script type="text/javascript" src="https://files.coinmarketcap.com/static/widget/currency.js"></script>-->
+                <!--<div class="coinmarketcap-currency-widget" data-currencyid="1027" data-base="USD" data-secondary=""-->
+                     <!--data-ticker="true" data-rank="true" data-marketcap="true" data-volume="true" data-stats="USD"-->
+                     <!--data-statsticker="false"></div>-->
+
+                <!--<script type="text/javascript" src="https://files.coinmarketcap.com/static/widget/currency.js"></script>-->
+                <!--<div class="coinmarketcap-currency-widget" data-currencyid="2" data-base="USD" data-secondary=""-->
+                     <!--data-ticker="true" data-rank="true" data-marketcap="true" data-volume="true" data-stats="USD"-->
+                     <!--data-statsticker="false"></div>-->
+
+                <!-- TradingView Widget BEGIN -->
+                <div class="tradingview-widget-container">
+                  <div class="tradingview-widget-container__widget"></div>
+                  <!--<div class="tradingview-widget-copyright"><a href="https://www.tradingview.com/markets/cryptocurrencies/prices-all/" rel="noopener" target="_blank"><span class="blue-text">Cryptocurrency Markets</span></a> by TradingView</div>-->
+                  <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-screener.js" async>
+                  {
+                      "width": "100%",
+                      "height": "100%",
+                      "defaultColumn": "overview",
+                      "screener_type": "crypto_mkt",
+                      "displayCurrency": "USD",
+                      "locale": "en"
+                  }
+                  </script>
+                </div>
+                <!-- TradingView Widget END -->
+            </div>
+        </div>
+
+    </div>
+<script>
+    sessionStorage.setItem('customerId', {{customerId}} );
+
+    var infoUrl = '{{info_url}}' + 'api/info/';
+
+    var times = document.getElementById('perfChartTime').childNodes;
+    for (var i=0; i < times.count; i++) {
+        times[i].addEventListener('click', function() { alert('yap') });
+    };
+
+
+
+    function LoadPerfChart(timescale) {
+        var formData = new FormData();
+        formData.append('CustomerID', sessionStorage.getItem('customerId'));
+        formData.append('Timescale', timescale);
+
+        fetch(infoUrl + 'holdingshistorychartdata', {
+            method: 'post',
+            body: formData
+        })
+        .then(function(response) {
+            return response.json();
+        })
+        .then(function(data) {
+            var dataset;
+            for (var i = 0; i < data.count; i++) {
+                 dataset
+            }
+        })
+        .catch(error => function(error){
+            console.error(error);
+        });
+    }
+</script>
+{% endblock %}

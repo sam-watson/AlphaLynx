@@ -1,0 +1,24 @@
+{% extends "AppNavBase.html" %}
+
+{% block title %}Documents{% endblock %}
+
+{% set active_page = "" %}
+
+{% block head %}
+    {{ super() }}
+    <style>
+        .content {
+            overflow: auto;
+        }
+        .content img {
+            width: 100vw;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    {{ super() }}
+
+    <img src="/static/BitLynx_ConstructionPage_v01-01.png" alt="Under Construction">
+
+{% endblock %}

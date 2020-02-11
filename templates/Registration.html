@@ -1,0 +1,186 @@
+{% extends "SiteBase.html" %}
+
+{% block title %}Registration{% endblock %}
+
+{% block head %}
+  {{ super() }}
+  <style>
+    .content {
+        min-height: 100%;
+        min-width: 50%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    }
+    .banner {
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    form {
+        min-width: 50%;
+    }
+    input, select {
+        border: 2px solid orange;
+        border-radius: 4px;
+    }
+    .login-btn {
+        width: 20%;
+    }
+    .reg-row {
+        display: flex;
+        justify-content: space-around;
+    }
+    .reg-row > * {
+        flex: 1 1 auto;
+        margin: 10px;
+        padding: 3px;
+    }
+    .reg-bit > * {
+        width: 100%;
+    }
+    .reg-btn {
+        max-width: 50%;
+        align-self: center;
+        color: #484948;
+    }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <div class="content">
+      <picture class='banner' >
+        <source media="(min-width: 480px)" srcset="/static/DarkBanner.png">
+        <img src="/static/DarkFaceLogo.png" width="auto" height="135px">
+      </picture>
+
+      <h1>Please Register a BitLynx Account</h1>
+
+      <form action="" method="post">
+        <div class="reg-row">
+            <input type="text" placeholder="Username" name="username" value="{{ request.form.username }}">
+            <input type="password" placeholder="Password" name="password" value="{{ request.form.password }}">
+            <input type="password" placeholder="Repeat Password" name="rpassword" value="{{ request.form.rpassword }}">
+        </div>
+        <div class="reg-row">
+          <input class="col" type="text" placeholder="First Name" name="firstname" value="{{ request.form.firstname }}">
+          <input class="col" type="text" placeholder="Last Name" name="lastname" value="{{ request.form.lastname }}">
+          <input class="col" type="text" placeholder="E-Mail Address" name="email" value="{{ request.form.email }}">
+        </div>
+
+        <div class="reg-row">
+          <input type="text" placeholder="Address" name="address1" value="{{ request.form.address1 }}">
+        </div>
+        <div class="reg-row">
+          <input type="text" placeholder="City" name="city" value="{{ request.form.city }}">
+
+          <select id="state" name="state" action="/" value="{{ request.form.state }}">
+            <option value="" disabled selected hidden>State</option>
+            <option value="AL">Alabama</option>
+            <option value="AK">Alaska</option>
+            <option value="AZ">Arizona</option>
+            <option value="AR">Arkansas</option>
+            <option value="CA">California</option>
+            <option value="CO">Colorado</option>
+            <option value="CT">Connecticut</option>
+            <option value="DE">Delaware</option>
+            <option value="DC">District Of Columbia</option>
+            <option value="FL">Florida</option>
+            <option value="GA">Georgia</option>
+            <option value="HI">Hawaii</option>
+            <option value="ID">Idaho</option>
+            <option value="IL">Illinois</option>
+            <option value="IN">Indiana</option>
+            <option value="IA">Iowa</option>
+            <option value="KS">Kansas</option>
+            <option value="KY">Kentucky</option>
+            <option value="LA">Louisiana</option>
+            <option value="ME">Maine</option>
+            <option value="MD">Maryland</option>
+            <option value="MA">Massachusetts</option>
+            <option value="MI">Michigan</option>
+            <option value="MN">Minnesota</option>
+            <option value="MS">Mississippi</option>
+            <option value="MO">Missouri</option>
+            <option value="MT">Montana</option>
+            <option value="NE">Nebraska</option>
+            <option value="NV">Nevada</option>
+            <option value="NH">New Hampshire</option>
+            <option value="NJ">New Jersey</option>
+            <option value="NM">New Mexico</option>
+            <option value="NY">New York</option>
+            <option value="NC">North Carolina</option>
+            <option value="ND">North Dakota</option>
+            <option value="OH">Ohio</option>
+            <option value="OK">Oklahoma</option>
+            <option value="OR">Oregon</option>
+            <option value="PA">Pennsylvania</option>
+            <option value="RI">Rhode Island</option>
+            <option value="SC">South Carolina</option>
+            <option value="SD">South Dakota</option>
+            <option value="TN">Tennessee</option>
+            <option value="TX">Texas</option>
+            <option value="UT">Utah</option>
+            <option value="VT">Vermont</option>
+            <option value="VA">Virginia</option>
+            <option value="WA">Washington</option>
+            <option value="WV">West Virginia</option>
+            <option value="WI">Wisconsin</option>
+            <option value="WY">Wyoming</option>
+          </select>
+        </div>
+        <div class="reg-row">
+          <input type="number" placeholder="Postal Code" name="zipcode" value="{{ request.form.zipcode }}">
+          <input type="text" placeholder="Country" name="country" value="{{ request.form.country }}">
+        </div>
+        <div class="reg-row">
+          <input type="text" placeholder="Company" name="company" value="{{ request.form.company }}">
+          <input type="text" placeholder="Occupation" name="occupation" value="{{ request.form.occupation }}">
+        </div>
+        <div class="reg-row">
+          <div class="reg-bit">
+          <p>Please Select An Annual Estimated Income</p>
+            <select id="estincome" name="est_ann_income" action="/" value="{{ request.form.est_ann_income }}">
+              <option>$0 - $25,000</option>
+              <option>$25,001 - $50,000</option>
+              <option>$50,001 - $75,000</option>
+              <option>$75,001 - $100,000</option>
+              <option>$100,001 - $250,000</option>
+              <option>$250,001 - $500,000</option>
+              <option>$500,000+</option>
+            </select>
+          </div>
+
+          <div class="reg-bit">
+            <p>Please Select Your Source of Trading Funds</p>
+            <select id="srcoffunds" name="source_of_funds" action="/" value="{{request.form.source_of_funds}}">
+              <option>Income From Earnings</option>
+              <option>Client Investment Capital</option>
+              <option>Sale of Business</option>
+              <option>Spouse/Parent</option>
+              <option>Inheritance</option>
+              <option>Lottery/Gaming Proceeds</option>
+              <option>Gift</option>
+              <option>Legal Settlement</option>
+              <option>Insurance Proceeds</option>
+              <option>Investment Proceeds</option>
+              <option>Pension/IRA/Retirement Savings</option>
+              <option>Investment Proceeds</option>
+              <option>Other</option>
+            </select>
+          </div>
+        </div>
+        <div class="reg-row">
+          <input class="reg-btn btn btn-warning" type="submit" value="Register">
+        </div>
+      </form>
+      {% if error %}
+        <p class="error"><strong>Error:</strong> {{ error }}
+      {% endif %}
+      {% if success %}
+        <p><a href="{{ url_for('LoginApp') }}">Account Added, Please return to login</a></p>
+      {% endif %}
+
+    </div>
+{% endblock %}

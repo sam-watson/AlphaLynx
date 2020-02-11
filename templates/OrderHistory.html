@@ -1,0 +1,50 @@
+{% extends "AppInfoPage.html" %}
+
+{% block title %}Order History{% endblock %}
+
+{% set active_page = "account" %}
+
+{% block head %}
+    {{ super() }}
+    <style>
+        tr:nth-child(even) {background-color: #f2f2f2;}
+    </style>
+{% endblock %}
+
+{% block content %}
+    {{ super() }}
+
+    <div id="orderhistory" class="container">
+        <div class="row">
+            <div class='col-lg-12'>
+                <h2>Order History</h2>
+                <br>
+                <table class="table table-bordered" style="wi">
+                    <thead>
+                        <tr>
+                            <td><b>Currency</b></td>
+                            <td><b>Amount</b></td>
+                            <td><b>Side</b></td>
+                            <td><b>Transaction ID</b></td>
+                            <td><b>Unit Price($)</b></td>
+                            <td><b>Status</b></td>
+                            <td><b>Order Type</b></td>
+                            <td><b>Timestamp</b></td>
+                            <td><b>BitLynx Fee (BPS)</b></td>
+                            <td><b>BitLynx Fee ($)</b></td>
+                        </tr>
+                    </thead>
+                    {% for order in orderhistory %}
+                    <tr>
+                        {% for i in order %}
+                        <td>
+                            {{i}}
+                        </td>
+                        {% endfor %}
+                    </tr>
+                    {% endfor %}
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock %}

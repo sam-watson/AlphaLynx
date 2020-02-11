@@ -1,0 +1,9 @@
+flask
+gunicorn
+psycopg2-binary
+requests
+flask_bootstrap
+sendgrid==1.6.22
+cryptography
+websocket-client
+feedparser

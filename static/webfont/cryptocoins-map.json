@@ -1,0 +1,569 @@
+{
+
+"ADA-alt": ["","E001"],
+
+"ADA": ["","E002"],
+
+"ADC-alt": ["","E003"],
+
+"ADC": ["","E004"],
+
+"AEON-alt": ["","E005"],
+
+"AEON": ["","E006"],
+
+"AMP-alt": ["","E007"],
+
+"AMP": ["","E008"],
+
+"ANC-alt": ["","E009"],
+
+"ANC": ["","E00A"],
+
+"ARCH-alt": ["","E00B"],
+
+"ARCH": ["","E00C"],
+
+"ARDR-alt": ["","E00D"],
+
+"ARDR": ["","E00E"],
+
+"ARK-alt": ["","E00F"],
+
+"ARK": ["","E010"],
+
+"AUR-alt": ["","E011"],
+
+"AUR": ["","E012"],
+
+"BANX-alt": ["","E013"],
+
+"BANX": ["","E014"],
+
+"BAT-alt": ["","E015"],
+
+"BAT": ["","E016"],
+
+"BAY-alt": ["","E017"],
+
+"BAY": ["","E018"],
+
+"BC-alt": ["","E019"],
+
+"BC": ["","E01A"],
+
+"BCH-alt": ["Bitcoin Cash","E01B"],
+
+"BCH": ["Bitcoin Cash","E01C"],
+
+"BCN-alt": ["","E01D"],
+
+"BCN": ["","E01E"],
+
+"BFT-alt": ["","E01F"],
+
+"BFT": ["","E020"],
+
+"BRK-alt": ["","E021"],
+
+"BRK": ["","E022"],
+
+"BRX-alt": ["","E023"],
+
+"BRX": ["","E024"],
+
+"BSD-alt": ["","E025"],
+
+"BSD": ["","E026"],
+
+"BTA": ["","E027"],
+
+"BTC-alt": ["Bitcoin","E028"],
+
+"BTC": ["Bitcoin","E029"],
+
+"BTCD-alt": ["","E02A"],
+
+"BTCD": ["","E02B"],
+
+"BTM-alt": ["","E02C"],
+
+"BTM": ["","E02D"],
+
+"BTS-alt": ["","E02E"],
+
+"BTS": ["","E02F"],
+
+"CLAM-alt": ["","E030"],
+
+"CLAM": ["","E031"],
+
+"CLOAK-alt": ["","E032"],
+
+"CLOAK": ["","E033"],
+
+"DAO-alt": ["","E034"],
+
+"DAO": ["","E035"],
+
+"DASH-alt": ["","E036"],
+
+"DASH": ["Dash","E037"],
+
+"DCR-alt": ["","E038"],
+
+"DCR": ["","E039"],
+
+"DCT-alt": ["","E03A"],
+
+"DCT": ["","E03B"],
+
+"DGB-alt": ["","E03C"],
+
+"DGB": ["","E03D"],
+
+"DGD": ["","E03E"],
+
+"DGX": ["","E03F"],
+
+"DMD-alt": ["","E040"],
+
+"DMD": ["","E041"],
+
+"DOGE-alt": ["","E042"],
+
+"DOGE": ["Dogecoin","E043"],
+
+"EMC-alt": ["","E044"],
+
+"EMC": ["","E045"],
+
+"EOS-alt": ["","E046"],
+
+"EOS": ["EOS","E047"],
+
+"ERC-alt": ["","E048"],
+
+"ERC": ["","E049"],
+
+"ETC-alt": ["","E04A"],
+
+"ETC": ["Ethereum Classic","E04B"],
+
+"ETH-alt": ["","E04C"],
+
+"ETH": ["Ethereum","E04D"],
+
+"FC2-alt": ["","E04E"],
+
+"FC2": ["","E04F"],
+
+"FCT-alt": ["","E050"],
+
+"FCT": ["","E051"],
+
+"FLO-alt": ["","E052"],
+
+"FLO": ["","E053"],
+
+"FRK-alt": ["","E054"],
+
+"FRK": ["","E055"],
+
+"FTC-alt": ["","E056"],
+
+"FTC": ["","E057"],
+
+"GAME-alt": ["","E058"],
+
+"GAME": ["","E059"],
+
+"GBYTE-alt": ["","E05A"],
+
+"GBYTE": ["","E05B"],
+
+"GDC-alt": ["","E05C"],
+
+"GDC": ["","E05D"],
+
+"GEMZ-alt": ["","E05E"],
+
+"GEMZ": ["","E05F"],
+
+"GLD-alt": ["","E060"],
+
+"GLD": ["","E061"],
+
+"GNO-alt": ["","E062"],
+
+"GNO": ["Gnosis","E063"],
+
+"GNT-alt": ["","E064"],
+
+"GNT": ["","E065"],
+
+"GOLOS-alt": ["","E066"],
+
+"GOLOS": ["","E067"],
+
+"GRC-alt": ["","E068"],
+
+"GRC": ["","E069"],
+
+"GRS": ["","E06A"],
+
+"HEAT-alt": ["","E06B"],
+
+"HEAT": ["","E06C"],
+
+"ICN-alt": ["","E06D"],
+
+"ICN": ["","E06E"],
+
+"IFC-alt": ["","E06F"],
+
+"IFC": ["","E070"],
+
+"INCNT-alt": ["","E071"],
+
+"INCNT": ["","E072"],
+
+"IOC-alt": ["","E073"],
+
+"IOC": ["","E074"],
+
+"IOTA-alt": ["","E075"],
+
+"IOTA": ["","E076"],
+
+"JBS-alt": ["","E077"],
+
+"JBS": ["","E078"],
+
+"KMD-alt": ["","E079"],
+
+"KMD": ["","E07A"],
+
+"KOBO": ["","E07B"],
+
+"KORE-alt": ["","E07C"],
+
+"KORE": ["","E07D"],
+
+"LBC-alt": ["","E07E"],
+
+"LBC": ["","E07F"],
+
+"LDOGE-alt": ["","E080"],
+
+"LDOGE": ["","E081"],
+
+"LSK-alt": ["","E082"],
+
+"LSK": ["","E083"],
+
+"LTC-alt": ["","E084"],
+
+"LTC": ["Litecoin","E085"],
+
+"MAID-alt": ["","E086"],
+
+"MAID": ["","E087"],
+
+"MCO-alt": ["","E088"],
+
+"MCO": ["","E089"],
+
+"MINT-alt": ["","E08A"],
+
+"MINT": ["","E08B"],
+
+"MONA-alt": ["","E08C"],
+
+"MONA": ["","E08D"],
+
+"MRC": ["","E08E"],
+
+"MSC-alt": ["","E08F"],
+
+"MSC": ["","E090"],
+
+"MTR-alt": ["","E091"],
+
+"MTR": ["","E092"],
+
+"MUE-alt": ["","E093"],
+
+"MUE": ["","E094"],
+
+"NBT": ["","E095"],
+
+"NEO-alt": ["","E096"],
+
+"NEO": ["","E097"],
+
+"NEOS-alt": ["","E098"],
+
+"NEOS": ["","E099"],
+
+"NEU-alt": ["","E09A"],
+
+"NEU": ["","E09B"],
+
+"NLG-alt": ["","E09C"],
+
+"NLG": ["","E09D"],
+
+"NMC-alt": ["","E09E"],
+
+"NMC": ["","E09F"],
+
+"NOTE-alt": ["","E0A0"],
+
+"NOTE": ["","E0A1"],
+
+"NVC-alt": ["","E0A2"],
+
+"NVC": ["","E0A3"],
+
+"NXT-alt": ["","E0A4"],
+
+"NXT": ["","E0A5"],
+
+"OK-alt": ["","E0A6"],
+
+"OK": ["","E0A7"],
+
+"OMG-alt": ["","E0A8"],
+
+"OMG": ["","E0A9"],
+
+"OMNI-alt": ["","E0AA"],
+
+"OMNI": ["","E0AB"],
+
+"OPAL-alt": ["","E0AC"],
+
+"OPAL": ["","E0AD"],
+
+"PART-alt": ["","E0AE"],
+
+"PART": ["","E0AF"],
+
+"PIGGY-alt": ["","E0B0"],
+
+"PIGGY": ["","E0B1"],
+
+"PINK-alt": ["","E0B2"],
+
+"PINK": ["","E0B3"],
+
+"PIVX-alt": ["","E0B4"],
+
+"PIVX": ["","E0B5"],
+
+"POT-alt": ["","E0B6"],
+
+"POT": ["","E0B7"],
+
+"PPC-alt": ["","E0B8"],
+
+"PPC": ["","E0B9"],
+
+"QRK-alt": ["","E0BA"],
+
+"QRK": ["","E0BB"],
+
+"QTUM-alt": ["","E0BC"],
+
+"QTUM": ["","E0BD"],
+
+"RADS-alt": ["","E0BE"],
+
+"RADS": ["","E0BF"],
+
+"RBIES-alt": ["","E0C0"],
+
+"RBIES": ["","E0C1"],
+
+"RBT-alt": ["","E0C2"],
+
+"RBT": ["","E0C3"],
+
+"RBY-alt": ["","E0C4"],
+
+"RBY": ["","E0C5"],
+
+"RDD-alt": ["","E0C6"],
+
+"RDD": ["","E0C7"],
+
+"REP-alt": ["","E0C8"],
+
+"REP": ["Augur","E0C9"],
+
+"RISE-alt": ["","E0CA"],
+
+"RISE": ["","E0CB"],
+
+"SALT-alt": ["","E0CC"],
+
+"SALT": ["","E0CD"],
+
+"SAR-alt": ["","E0CE"],
+
+"SAR": ["","E0CF"],
+
+"SCOT-alt": ["","E0D0"],
+
+"SCOT": ["","E0D1"],
+
+"SDC-alt": ["","E0D2"],
+
+"SDC": ["","E0D3"],
+
+"SIA-alt": ["","E0D4"],
+
+"SIA": ["","E0D5"],
+
+"SJCX-alt": ["","E0D6"],
+
+"SJCX": ["","E0D7"],
+
+"SLG-alt": ["","E0D8"],
+
+"SLG": ["","E0D9"],
+
+"SLS-alt": ["","E0DA"],
+
+"SLS": ["","E0DB"],
+
+"SNRG-alt": ["","E0DC"],
+
+"SNRG": ["","E0DD"],
+
+"START-alt": ["","E0DE"],
+
+"START": ["","E0DF"],
+
+"STEEM-alt": ["","E0E0"],
+
+"STEEM": ["","E0E1"],
+
+"STR-alt": ["","E0E2"],
+
+"STR": ["Stellar","E0E3"],
+
+"STRAT-alt": ["","E0E4"],
+
+"STRAT": ["","E0E5"],
+
+"SWIFT-alt": ["","E0E6"],
+
+"SWIFT": ["","E0E7"],
+
+"SYNC-alt": ["","E0E8"],
+
+"SYNC": ["","E0E9"],
+
+"SYS-alt": ["","E0EA"],
+
+"SYS": ["","E0EB"],
+
+"TRIG-alt": ["","E0EC"],
+
+"TRIG": ["","E0ED"],
+
+"TX-alt": ["","E0EE"],
+
+"TX": ["","E0EF"],
+
+"UBQ-alt": ["","E0F0"],
+
+"UBQ": ["","E0F1"],
+
+"UNITY-alt": ["","E0F2"],
+
+"UNITY": ["","E0F3"],
+
+"USDT-alt": ["","E0F4"],
+
+"USDT": ["","E0F5"],
+
+"VIOR-alt": ["","E0F6"],
+
+"VIOR": ["","E0F7"],
+
+"VNL-alt": ["","E0F8"],
+
+"VNL": ["","E0F9"],
+
+"VPN-alt": ["","E0FA"],
+
+"VPN": ["","E0FB"],
+
+"VRC-alt": ["","E0FC"],
+
+"VRC": ["","E0FD"],
+
+"VTC-alt": ["","E0FE"],
+
+"VTC": ["","E0FF"],
+
+"WAVES-alt": ["","E100"],
+
+"WAVES": ["","E101"],
+
+"XAI-alt": ["","E102"],
+
+"XAI": ["","E103"],
+
+"XBS-alt": ["","E104"],
+
+"XBS": ["","E105"],
+
+"XCP-alt": ["","E106"],
+
+"XCP": ["","E107"],
+
+"XEM-alt": ["","E108"],
+
+"XEM": ["","E109"],
+
+"XLM": ["Stellar","E0E3"],
+
+"XMR": ["Monero","E10A"],
+
+"XPM-alt": ["","E10B"],
+
+"XPM": ["","E10C"],
+
+"XRP-alt": ["","E10D"],
+
+"XRP": ["Ripple","E10E"],
+
+"XTZ-alt": ["","E10F"],
+
+"XTZ": ["","E110"],
+
+"XVG-alt": ["","E111"],
+
+"XVG": ["","E112"],
+
+"XZC-alt": ["","E113"],
+
+"XZC": ["","E114"],
+
+"YBC-alt": ["","E115"],
+
+"YBC": ["","E116"],
+
+"ZEC-alt": ["","E117"],
+
+"ZEC": ["Zcash","E118"],
+
+"ZEIT-alt": ["","E119"],
+
+"ZEIT": ["","E11A"]
+
+}

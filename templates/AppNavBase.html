@@ -1,0 +1,363 @@
+{% extends "SiteBase.html" %}
+
+{% block head %}
+    {{ super() }}
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.js'></script>
+
+    <style>
+        .app-bounds header { grid-area: header; }
+        .app-bounds footer { grid-area: footer; }
+        .app-bounds content { grid-area: main; }
+        .app-bounds {
+            display: grid;
+            grid-template-rows: 122px auto 30px;
+        	height: 100vh;
+            grid-template-areas:
+                "header"
+                "main"
+                "footer";
+        }
+
+        .navbar-inverse { background-color: #FFFFFF}
+        .navbar-inverse .navbar-nav>.active>a:hover,.navbar-inverse .navbar-nav>li>a:hover, .navbar-inverse .navbar-nav>li>a:focus { background-color: #FFF29E}
+        .navbar-inverse .navbar-nav>.active>a,.navbar-inverse .navbar-nav>.open>a,.navbar-inverse .navbar-nav>.open>a, .navbar-inverse .navbar-nav>.open>a:hover,.navbar-inverse .navbar-nav>.open>a, .navbar-inverse .navbar-nav>.open>a:hover, .navbar-inverse .navbar-nav>.open>a:focus { background-color: #FFFFFF}
+        .dropdown-menu { background-color: #FFFFFF}
+        .dropdown-menu>li>a:hover, .dropdown-menu>li>a:focus { background-color: #FFF29E}
+        .navbar-inverse { background-image: none; }
+        .dropdown-menu>li>a:hover, .dropdown-menu>li>a:focus { background-image: none; }
+        .navbar-inverse { border-color: #F0F0F0}
+        .navbar-inverse .navbar-brand { color: #999999}
+        .navbar-inverse .navbar-brand:hover { color: #FFFFFF}
+        .navbar-inverse .navbar-nav>li>a { color: #999999}
+        .navbar-inverse .navbar-nav>li>a:hover, .navbar-inverse .navbar-nav>li>a:focus { color: #121212}
+        .navbar-inverse .navbar-nav>.active>a,.navbar-inverse .navbar-nav>.open>a, .navbar-inverse .navbar-nav>.open>a:hover, .navbar-inverse .navbar-nav>.open>a:focus { color: #121212; font-weight: bold;}
+        .navbar-inverse .navbar-nav>.active>a:hover, .navbar-inverse .navbar-nav>.active>a:focus { color: #696969}
+        .dropdown-menu>li>a { color: #333333}
+        .dropdown-menu>li>a:hover, .dropdown-menu>li>a:focus { color: #6E6E6E}
+        .navbar-inverse .navbar-nav>.dropdown>a .caret { border-top-color: #999999}
+        .navbar-inverse .navbar-nav>.dropdown>a:hover .caret { border-top-color: #121212}
+        .navbar-inverse .navbar-nav>.dropdown>a .caret { border-bottom-color: #999999}
+        .navbar-inverse .navbar-nav>.dropdown>a:hover .caret { border-bottom-color: #121212}
+
+        .navbar {
+            z-index: 100;
+        }
+        .navbar-brand > img {
+            margin-top: -14px;
+        }
+        .tradingview-widget-container.top-ticker {
+            height: 72px !important;
+            position: relative;
+        }
+        .tradingview-widget-copyright {
+            position: absolute;
+            bottom: -10px;
+            right: 0px;
+        }
+        .notice {
+            padding: 15px;
+        }
+        .notice > * {
+            font-weight: bold;
+            font-size: 120%;
+        }
+        .notificon {
+            filter: invert(80%);
+        }
+        .notificon:hover {
+            filter: invert(100%);
+        }
+
+        .footer {
+            overflow: hidden;
+        }
+        .footer-bar {
+            display: flex;
+            justify-content: space-between;
+            align-content: center;
+            background: #0d0d0d;
+        }
+        .footer-bar > * {
+            color: #cccccc;
+            margin: 5px 25px 5px;
+        }
+        .footer-bar > div {
+            flex: 1;
+        }
+        .cr {
+            font-size: 80%;
+            color: #999999;
+            align-self: flex-end;
+        }
+
+        .noteBox, .noteList {
+            display: flex;
+            flex-flow: column;
+            align-content: center;
+            justify-content: center;
+        }
+        #noteAlert {
+            grid-area: alert;
+            margin-left: 20px;
+        }
+        #noteList {
+            grid-area: list;
+        }
+        #noteLink * {
+            font-weight: bold;
+        }
+        /* Popup */
+        .popup {
+            position: relative;
+            display: inline-block;
+            cursor: pointer;
+        }
+        .popup .popupBox @media (max-width: 768px) {
+            min-width: 80vw;
+            max-width: 100vw;
+        }
+        .popup .popupBox {
+            visibility: hidden;
+            display: grid !important;
+            grid-template-columns: auto 300px;
+            grid-template-areas: "alert list";
+            position: absolute;
+            z-index: 1;
+            top: 160%;
+            right: -5px;
+            min-width: 700px;
+            max-width: 100vw;
+            padding: 8px 0;
+            margin-left: -80px;
+            background-color: #555;
+            color: #fff;
+            border-radius: 6px;
+        }
+        .popup .popupBox::after { /* Arrow */
+            content: "";
+            position: absolute;
+            bottom: 100%;
+            right: 10px;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: transparent transparent #555 transparent;
+        }
+        /* Toggle this class when clicking on the popup container (hide and show the popup) */
+        .popup .show {
+            visibility: visible;
+            -webkit-animation: fadeIn 1s;
+            animation: fadeIn 1s
+        }
+        /* Add animation (fade in the popup) */
+        @-webkit-keyframes fadeIn {
+            from {opacity: 0;}
+            to {opacity: 1;}
+        }
+        @keyframes fadeIn {
+            from {opacity: 0;}
+            to {opacity:1 ;}
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+{{ super() }}
+<div class="app-bounds">
+    <div class="app-row header">
+        {% block header %}
+        <!-- TradingView Widget BEGIN -->
+        <div class="tradingview-widget-container top-ticker">
+            <div class="tradingview-widget-container__widget"></div>
+            <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-tickers.js" async>
+              {
+              "symbols": [
+                {"title": "BTC/USD",
+                  "proName": "BITFINEX:BTCUSD"},
+                {"title": "ETH/USD",
+                  "proName": "BITFINEX:ETHUSD"},
+                {"description": "LTC/USD",
+                  "proName": "COINBASE:LTCUSD"},
+                {"description": "NULS/BTC",
+                  "proName": "BINANCE:NULSBTC"},
+                {"description": "TRON/BTC",
+                  "proName": "BINANCE:TRXBTC"},
+                {"description": "XRP/USD",
+                  "proName": "BITFINEX:XRPUSD"},
+                {"description": "BCH/USD",
+                  "proName": "COINBASE:BCHUSD"},
+                {"description": "IOT/USD",
+                  "proName": "BITFINEX:IOTUSD"}
+              ],
+              "locale": "en"
+            }
+            </script>
+        </div>
+        <!-- TradingView Widget END -->
+        <nav class="navbar navbar-inverse">
+            <a class="navbar-brand" href="{{ url_for('DashboardApp') }}">
+                <img src="/static/DarkBannerMd.png" height="48" class="d-inline-block align-center" alt="Lynx Bitinus">
+            </a>
+            <div class="container-fluid">
+
+                {% set active_page = active_page|default('dash') -%}
+
+                <ul class="nav navbar-nav">
+
+                    <li class="dropdown {% if active_page == 'account' %}active{% endif %}">
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">ACCOUNT
+                            <span class="caret"></span></a>
+                        <ul class="dropdown-menu">
+                            <li><a href="{{ url_for('DashboardApp') }}">Overview</a></li>
+                            <li><a href="{{ url_for('PositionsApp') }}">Positions</a></li>
+                            <li><a href="{{ url_for('OrderHistApp') }}">Transactions</a></li>
+                            <li><a href="{{ url_for('TransfersApp') }}">Transfers</a></li>
+                            <li><a href="{{ url_for('DocumentsApp') }}">Documents</a></li>
+                        </ul>
+                    </li>
+
+                    <li class="{% if active_page == 'trade' %}active{% endif %}"><a class="bold" href="{{ url_for('TradeApp') }}">TRADE
+                        </a></li>
+
+                    <li class="dropdown {% if active_page == 'research' %}active{% endif %}">
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">RESEARCH
+                            <span class="caret"></span></a>
+                        <ul class="dropdown-menu">
+                            <li><a href="{{ url_for('ResearchApp') }}">Market Overview</a></li>
+                            <li><a href="{{ url_for('TrendingApp') }}">Trending</a></li>
+                            <li><a href="{{ url_for('MarketCapApp') }}">Market Research</a></li>
+                        </ul>
+                    </li>
+
+                    <li class="{% if active_page == 'news' %}active{% endif %}"><a class="bold" href="{{ url_for('NewsApp') }}">NEWS
+                        </a></li>
+                </ul>
+
+                <ul class="nav navbar-nav navbar-right">
+                    <li class="notice">{% block notice %}{% endblock %}</li>
+
+                    <li id="notifsToggle" class="dropdown {% if active_page == 'notifications' %}active{% endif %} popup">
+                        <a class="dropdown-toggle" data-toggle="dropdown" hrefs="#">
+                            <img src="/static/notification.svg" width="20" height="20" class="notificon d-inline-block align-center" alt="notification"/>
+                        </a>
+                        <ul id="noteList" class="dropdown-menu">
+                            <li id="noteLink"><a href="{{ url_for('NotificationsApp') }}">View Your History</a></li>
+                        </ul>
+
+                        <!--<div class="popupBox" id="notePopup">-->
+                            <!--<div id="noteAlert" class="noteBox noteLeft">-->
+                                <!--<h3 id="alertTitle">Test Message</h3>-->
+                                <!--<h5 id="alertMessage">And so on and so forth</h5>-->
+                                <!--<h5 id="alertTime">Right now</h5>-->
+                            <!--</div>-->
+                            <!--<div id="noteList" class="noteBox noteRight">-->
+                                <!--<table>-->
+
+                                <!--</table>-->
+                                <!--<div id="noteLink">-->
+                                    <!--<span><a class="btn" href="{{ url_for('NotificationsApp') }}">View All</a></span>-->
+                                <!--</div>-->
+                            <!--</div>-->
+                        <!--</div>-->
+                        <script>
+                            function Notify(note) {
+                                AddNote(note);
+                                <!--document.getElementById('notifsToggle').classList.add('open');-->
+                            }
+                        </script>
+
+                        <!--<img src="/static/notification.svg" width="20" height="20" class="notificon d-inline-block align-center" alt="notification">-->
+                    </li>
+
+                    <li class="dropdown {% if active_page == 'user' %}active{% endif %}">
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">USER
+                            <span class="caret"></span></a>
+                        <ul class="dropdown-menu">
+                            <li><a href="{{ url_for('AccountApp') }}">Verification</a></li>
+                            <li><a href="{{ url_for('AccountSupportApp') }}">Support</a></li>
+                            <li><a href="{{ url_for('PaymentsApp') }}">Payment Information</a></li>
+                            <li><a href="#" onclick="ToggleTheme()">Dark Theme (off)</a></li>
+                        </ul>
+                    </li>
+
+                    <li><a href="{{ url_for('Home') }}">LOGOUT</a></li>
+                </ul>
+
+        </nav>
+        {% endblock %}
+    </div>
+
+    <div class="app-row content">
+        {% block content %}{% endblock %}
+    </div>
+
+    <div class="app-row footer">
+        {% block footer %}
+        <div class="footer-bar">
+            <p class="cr">CopyRight © 2018 BitLynx Financial Services, LLC</p>
+            <div></div>
+            <p>About Us</p>
+            <p>Contact Us</p>
+            <p>Legal</p>
+        </div>
+        {% endblock %}
+    </div>
+
+    <script>
+        var noteAlert = document.getElementById('noteAlert');
+        var noteList = document.getElementById('noteList');
+        var noteLink = document.getElementById('noteLink');
+
+        function AddNote(note) {
+            ClearNotes(noteList);
+
+            var notes = sessionStorage.getItem('notes');
+            if (notes) {
+                notes = JSON.parse(notes);
+            } else {
+                notes = [];
+            }
+
+            if (note) {
+                notes.push(note);
+                sessionStorage.setItem('notes', JSON.stringify(notes));
+            }
+
+            for (var i = notes.length - 1; i >= 0; i--) {
+                var li = document.createElement('li');
+                var a = document.createElement('a');
+                a.setAttribute('href', "{{ url_for('NotificationsApp') }}" );
+                a.textContent = notes[i].message;
+                li.appendChild(a);
+                noteList.insertBefore(li, noteLink);
+            }
+        }
+
+        function ClearNotes(el) {
+            while (el.firstChild != noteLink) {
+                el.removeChild(el.firstChild);
+            }
+        }
+
+        if(window.attachEvent) {
+            window.attachEvent('onload', Init);
+        } else {
+            if(window.onload) {
+                var curronload = window.onload;
+                var newonload = function(evt) {
+                    curronload(evt);
+                    Init(evt);
+                };
+                window.onload = newonload;
+            } else {
+                window.onload = Init;
+            }
+        }
+
+        function Init(evt) {
+            AddNote();
+        }
+
+    </script>
+</div>
+{% endblock %}

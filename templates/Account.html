@@ -1,0 +1,33 @@
+{% extends "AppInfoPage.html" %}
+
+{% block title %}Account Overview{% endblock %}
+
+{% set active_page = "" %}
+
+{% block head %}
+    {{ super() }}
+{% endblock %}
+
+{% block info %}
+    {{ super() }}
+
+    <div class="">
+        <h2>Account Overview</h2>
+        <p>Name: {{name}}</p>
+        <p>Address: {{address}}</p>
+        <p>City: {{city}}</p>
+        <p>State: {{state}}</p>
+        <p>Zip: {{zipcode}}</p>
+        <p>Country: {{country}}</p>
+        <p>Occupation: {{occupation}}</p>
+        <p>Estimated Income: {{est_income}}</p>
+        <p>Source of Funds: {{source_of_funds}}</p>
+        <p>Account Locked?: {{is_locked}}</p>
+        <p>KYC Completed?: {{kyc_complete}}</p>
+        <br>
+        <br>
+        {% if kyc_complete == 'False' %}
+            <p><input class="reg-btn btn btn-warning" type="submit" name="KYCButton" value="Complete KYC Requirements"></p>
+        {% endif %}
+    </div>
+{% endblock %}

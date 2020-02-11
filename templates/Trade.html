@@ -1,0 +1,695 @@
+{% extends "AppNavBase.html" %}
+
+{% block title %}Trade on BitLynx{% endblock %}
+
+{% set active_page = "trade" %}
+
+{% block head %}
+    {{ super() }}
+    <!-- <link rel="stylesheet" href="/static/webfont/cryptocoins.css"> -->
+    <link rel="stylesheet" href="/static/webfont/cryptocoins-colors.css">
+
+    <style>
+        @font-face {
+          font-family: "cryptocoins";
+          src: url('/static/webfont/cryptocoins.woff2') format('woff2'),
+               url('/static/webfont/cryptocoins.woff') format('woff'),
+               url('/static/webfont/cryptocoins.ttf') format('truetype');
+        }
+
+        .content, .layout, .layout > *, .order-book {
+            min-height: 0;  /* Allow scrolling content */
+            min-width: 0;   /* Allow scrolling content; needed for Firefox */
+        }
+        .layout {
+            display: grid;
+            place-self: stretch;
+            grid-template-columns: max-content repeat(3, 1fr);
+            grid-template-rows: 3fr 1fr;
+            grid-column-gap: 10px;
+            grid-template-areas:
+                "coins chart chart order"
+                "coins book book order";
+            grid-gap: 10px 10px;
+            height: 100%;
+            width: 100%;
+            padding: 15px;
+        }
+        #marketMenu { grid-area: coins }
+        #orderMenu { grid-area: order }
+        #priceChart { grid-area: chart }
+
+        #coinMenu {
+            overflow-y: auto;
+        }
+        .coin-selector {
+            cursor: pointer;
+        }
+        .coin-selector:hover {
+            background: var(--hover-color);
+        }
+
+        .menu-bar {
+            display: grid;
+            grid-template-rows: auto 1fr;
+            align-items: stretch;
+            overflow-y: auto;
+        }
+        #orderForm {
+            display: grid;
+            grid-template-rows: auto auto auto;
+            grid-row-gap: 10px;
+        }
+        .trade-menu * {
+            font-family: "cryptocoins", 'Open Sans', sans-serif;
+        }
+        .trade-menu {
+            padding: 10px 10px 10px;
+            <!--margin: 0px 10px 10px;-->
+        }
+        div.trade-menu {
+            background: white;
+            <!--border-bottom: 2px solid orange;-->
+        }
+        .menu-header {
+            color: var(--header-color, #101010);
+            margin-top: 0px;
+            <!--color: #4F4F4F;-->
+            <!--text-shadow:-->
+                 <!-- -1px -1px 0 orange;-->
+        }
+        .menu-item {
+            margin-left: 8px;
+        }
+        input, select {
+            border: 2px solid orange;
+            border-radius: 4px;
+            margin: 0px 10px;
+            padding: 3px;
+        }
+
+        #marketSelection {
+            border: 1px solid orange;
+            margin-bottom: 10px;
+        }
+        #marketSelection .active {
+            background-color: #FFF29E;
+        }
+        #coinPick {
+            font-size: 150%;
+        }
+        #sidePick {
+            font-size: 120%;
+            padding: 3px 3px 6px;
+        }
+        .tradeBtn {
+            align-self: center;
+            justify-self: center;
+            margin: 10px 10px;
+            border: 2px solid white;
+            background: #ffd1aa;
+        }
+        .tradeBtn:hover {
+            background: orange;
+        }
+
+        .chart {
+            height: 100%;
+            width: 100%;
+            background: white;
+        }
+        .tradingview_5e912 {
+            height: 100%;
+            width: 100%;
+        }
+        #tradingview_5f99e-wrapper {
+            position: relative;
+            box-sizing: content-box;
+            width: 100%;height: 100%;
+            margin: 0 auto !important;
+            padding: 0 !important;
+            font-family:Arial,sans-serif;
+        }
+
+        #orderBooks {
+            grid-area: book;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-areas: "bids asks";
+            grid-column-gap: 10px;
+            /* position: relative; */
+        }
+        #bidBook { grid-area: bids; }
+        #askBook { grid-area: asks; }
+        .order-book {
+            display: grid;
+            grid-template:
+                "title head" 20px
+                "title book" auto
+                / auto 1fr;
+        }
+        .book-head {
+            grid-area: head;
+            margin-right: 24px;
+            text-align: right;
+            overflow: hidden;
+        }
+        .book-head > * {
+            display: inline-block;
+            width: 100px;
+            /* margin-left: 10px */
+        }
+        .book-table {
+            grid-area: book;
+            overflow-y: auto;
+            overflow-x: hidden;
+            position: relative;
+        }
+        .order-book table {
+            position: absolute;
+            table-layout: fixed;
+            width: 300px;
+            /* min-width: 80%; */
+            /* margin-left: auto; */
+            margin-right: 10px;
+            right: 0px;
+        }
+        .book-table td {
+            width: 40px;
+            text-align: right;
+        }
+
+        #tradeAlertBody .alert {
+            background: var(--alert-color, white);
+            -webkit-transition: background .5s ease-out;
+               -moz-transition: background .5s ease-out;
+                 -o-transition: background .5s ease-out;
+                    transition: background .5s ease-out;
+        }
+
+    </style>
+{% endblock %}
+
+{% block notice %}
+<span style="color:{% if ('Failed' in message) or ('error' in message) %} #ff6666 {% else %} #80bfff {% endif %}">
+    {{message}}</span>
+{% endblock %}
+
+{% block content %}
+    {{ super() }}
+
+    <div class="layout" id="bounds">
+
+        <div id="marketMenu" class="trade-menu">
+            <div id="marketSelection" class="btn-group btn-group-toggle" data-toggle="buttons">
+                <label id='USDmarket' class="btn btn-secondary active" onclick="MarketClick('USD')">
+                    <input type="radio" name="market" value="USD" id="marketUSD" checked>USD MARKET
+                </label>
+                <label id='BTCmarket' class="btn btn-secondary" onclick="MarketClick('BTC')">
+                    <input type="radio" name="market" value="BTC" id="marketBTC">BTC MARKET
+                </label>
+            </div>
+            <div id="coinMenu">
+                {% for currency in currencies %}
+                <div class="cc {{currency[0]}} coin-selector" data-symbol="{{currency[0]}}" onclick="CoinClick(event)">
+                  {% if currencyChars[currency[0]][1] %} &#x{{currencyChars[currency[0]][1]}} {% endif %}
+                  {{currency[1]}} ({{currency[0]}})
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div id="orderMenu" class="menu-bar">
+
+            <form id="orderForm" action="" method="post">
+                <div class="trade-menu">
+                    <h4 class="menu-header">Currency</h4>
+                    <select id="coinPick" name="currency" action="/" value="{{request.form.selected_currency}}">
+                      {% for currency in currencies %}
+                        <option class="cc {{currency[0]}}" value="{{currency[0]}}">
+                          {% if currencyChars[currency[0]][1] %} &#x{{currencyChars[currency[0]][1]}} {% endif %}
+                            {{currency[1]}} ({{currency[0]}})
+                        </option>
+                      {% endfor %}
+                    </select>
+                </div>
+
+                <div id="balances" class="trade-menu">
+                    <h4 class="menu-header">Your Balances</h4>
+                    <h5 id="cashBalance" class="menu-item">USD: ${{balance}}</h5>
+                    <h5 id="altBalance" class="menu-item">Alt: ---</h5>
+                    <div id="infoUrl" style="display:none" data="{{ url_for('InfoAPI', option='') }}"></div>
+                </div>
+
+                <div id="order" class="trade-menu">
+                    <h4 class="menu-header">Place an Order</h4>
+
+                    <select id="sidePick" name="side" placeholder="Buy/Sell" action="/" value="{{request.form.side}}">
+                        <option style="color:green">Buy</option>
+                        <option style="color:red">Sell</option>
+                    </select>
+
+                    <input id="orderAmount" type="text" placeholder="Amount" name="amount" value="{{request.form.amount}}">
+                    <br>
+                    <br>
+
+                    <h4 class="menu-item" style="display: inline">Total &#8776;</h4><h4 class="menu-item" style="display: inline" id="bestPrice">{{ bestprice }}</h4>
+                </div>
+
+            </form>
+
+            <button id="tradeSubmit" class="tradeBtn btn btn-lg" data-toggle="modal" data-target="#tradeAlert">Execute Trade</button>
+
+            {% if message %}
+            <p class="important"><strong>Message:</strong> {{ message }} </p>
+            {% endif %}
+        </div>
+
+        <div id="priceChart" class="right-col chart">
+            <!-- TradingView Widget BEGIN -->
+            <!--<div class="tradingview-widget-container">-->
+                <!--<div id="tradingview_5e912"></div>-->
+                <!--<div class="tradingview-widget-copyright"><a href="https://s3.amazonaws.com/tradingview/tv.js" rel="noopener" target="_blank"><span class="blue-text">AAPL</span> <span class="blue-text">chart</span> by TradingView</a></div>-->
+                <!--<script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>-->
+            <!--</div>-->
+            <!-- <div id="tradingview_5f99e-wrapper" style="position: relative;  box-sizing: content-box;  width: 100%;height: 100    margin: 0 auto !important padding: 0 !importantfont-family:Arial, sans-serif;"> -->
+            <div id="tradingview_5f99e-wrapper">
+                <div id="tradingview_5f99e" style="width: 100%;height: 100%;background: transparent;padding: 0 !important;">
+                    <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+                    <!--<iframe src="https://s.tradingview.com/widgetembed/?frameElementId=tradingview_5f99e&amp;symbol=BTCUSD&amp;interval=D&amp;hidesidetoolbar=0&amp;symboledit=1&amp;saveimage=1&amp;toolbarbg=E4E8EB&amp;studies=%5B%5D&amp;studies_overrides=%7B%7D&amp;overrides=%7B%7D&amp;enabled_features=%5B%5D&amp;disabled_features=%5B%5D&amp;utm_source=chart.bz&amp;utm_medium=widget&amp;utm_campaign=chart&amp;utm_term=BTCUSD"-->
+                            <!--style="width: 100%; height: 100%; margin: 0 !important; padding: 0 !important;" frameborder="0" allowtransparency="true" scrolling="no" allowfullscreen="">-->
+                    <!--</iframe>-->
+                </div>
+            </div>
+            <!-- TradingView Widget END -->
+        </div>
+
+        <div id="orderBooks">
+            <div id="bidBook" class="order-book trade-menu">
+                <h4 class="bids menu-header">Bids</h4>
+                <div class="book-head"> <div><b>Rate</b></div> <div><b>Depth</b></div> </div>
+                <div class="book-table">
+                    <table>
+                        <!-- <thead>
+                            <tr><th> </th><th><div>Rate ($)</div></th><th><div>Depth</div></th></tr></thead> -->
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+            <div id="askBook" class="order-book trade-menu">
+                <h4 class="asks menu-header">Asks</h4>
+                <div class="book-head"> <div><b>Rate</b></div> <div><b>Depth</b></div> </div>
+                <div class="book-table">
+                    <table>
+                        <!-- <thead>
+                            <tr><th> </th><th><div>Rate ($)</div></th><th><div>Depth</div></th></tr></thead> -->
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="tradeAlert" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h2 class="modal-title" id="tradeAlertTitle" style="display:inline-block">Modal title</h2>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <h4 id="tradeAlertBody"></h4>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+<script type="text/javascript">
+    var infoUrl = '{{info_url}}' + 'api/info/';
+
+
+    var currencyChars = {{currencyChars|tojson}};
+
+    var coinMenu = document.getElementById('coinMenu');
+    var coinPick = document.getElementById('coinPick');
+    var sidePick = document.getElementById('sidePick');
+    var cashBal = document.getElementById('cashBalance');
+    var altBal = document.getElementById('altBalance');
+    var bestPrice = document.getElementById('bestPrice');
+    var orderAmt = document.getElementById('orderAmount');
+    var orderForm = document.getElementById('orderForm');
+    var tradeSubmit = document.getElementById('tradeSubmit');
+    var chart = document.getElementById('priceChart');
+    var bidBook = document.getElementById('bidBook').getElementsByTagName('table')[0];
+    var askBook = document.getElementById('askBook').getElementsByTagName('table')[0];
+
+    var delayTimer;
+    var bookTimer;
+
+    function Init() {
+        if (!sessionStorage.getItem('marketSelection')) {
+            sessionStorage.setItem('marketSelection', 'USD');
+            document.getElementById('marketUSD').setAttribute('enabled', 'enabled');
+        } else {
+            document.getElementById('market' + sessionStorage.getItem('marketSelection')).checked = true;
+        }
+
+        coinPick.selectedIndex = sessionStorage.getItem('selectedCoin') === null ? 0 : sessionStorage.getItem('selectedCoin');
+        sidePick.selectedIndex = sessionStorage.getItem('selectedSide') === null ? 0 : sessionStorage.getItem('selectedSide');
+        UpdateFormStyle();
+        // SetMarket(sessionStorage.getItem('marketSelection'));
+        document.getElementById(GetMarketSelection() + 'market').click();
+
+        StartOrderBooks(5000);
+    }
+
+    function SetMarket(selection) {
+        sessionStorage.setItem('marketSelection', selection);
+
+        var formData = new FormData();
+        formData.append('CustomerID', sessionStorage.getItem('customerId'));
+        formData.append('market_selection', selection);
+
+        fetch(infoUrl + 'getavailablecurrencies', {
+            method: 'post',
+            body: formData
+        })
+        .then(function(response) {
+            return response.json();
+        })
+        .then(function(data) {
+            BuildCoinMenu(data.AvailableCurrencies);
+            BuildCoinDropDown(coinPick, data.AvailableCurrencies);
+            SetCoin(data.AvailableCurrencies[0][0]);
+        })
+        .catch(error => function(error){
+            console.error(error);
+        });
+    }
+
+    function BuildCoinMenu(coinList) {
+        while (coinMenu.firstChild) {
+            coinMenu.removeChild(coinMenu.firstChild);
+        }
+        for (var i = 0; i < coinList.length; i++) {
+            var coinEl = document.createElement('div');
+            var coinSym = coinList[i][0];
+            coinEl.className = 'cc ' + coinSym + ' coin-selector';
+            coinEl.setAttribute('data-symbol', coinSym);
+            coinEl.addEventListener('click', CoinClick);
+            var coinText = '';
+            if (currencyChars[coinSym][1]) {
+                var code = currencyChars[coinSym][1];
+                coinText = String.fromCodePoint(parseInt(code, 16)) + ' ';
+            }
+            coinText += coinList[i][1] + ' (' + coinList[i][0] + ')';
+            coinEl.innerHTML = coinText;
+            coinMenu.appendChild(coinEl);
+        }
+    }
+
+    function BuildCoinDropDown(selectEl, coinList) {
+        while (selectEl.firstChild) {
+            selectEl.removeChild(selectEl.firstChild);
+        }
+        for (var i = 0; i < coinList.length; i++) {
+            var coinEl = document.createElement('option');
+            var coinSym = coinList[i][0];
+            coinEl.className = 'cc ' + coinSym;
+            coinEl.value = coinSym;
+            var coinText = '';
+            if (currencyChars[coinSym][1]) {
+                var code = currencyChars[coinSym][1];
+                coinText = String.fromCodePoint(parseInt(code, 16)) + ' ';
+            }
+            coinText += coinList[i][1] + ' (' + coinList[i][0] + ')';
+            coinEl.innerHTML = coinText;
+            selectEl.appendChild(coinEl);
+        }
+    }
+
+    function StartOrderBooks(refreshTime) {
+        UpdateOrderBooks()
+        bookTimer = setInterval(UpdateOrderBooks, refreshTime);
+    }
+
+    function SetCoin(symbol) {
+        coinPick.value = symbol;
+        UpdateCoin();
+    }
+
+    function GetMarketSelection() {
+        return sessionStorage.getItem('marketSelection');
+    }
+
+    function UpdateCoin() {
+        LoadBalances();
+        UpdatePrice();
+    };
+
+    function LoadBalances() {
+        altBal.innerText = coinPick.value + ': 0';
+
+        var id = sessionStorage.getItem('customerId');
+        var formData = new FormData();
+        formData.append('CustomerID', id);
+
+        fetch(infoUrl + 'holdingsinfo', {
+            method: 'post',
+            body: formData
+        })
+        .then(function(response) {
+            return response.json();
+        })
+        .then(function(data) {
+            for (var i = 0; i < data.Holdings.length; i++) {
+                var h = data.Holdings[i];
+                if (h.currency === GetMarketSelection()) {
+                    var MktSym = (h.currency === 'USD') ? '$' : '฿';
+                    var digits = (h.currency === 'USD') ? 2 : 5;
+                    cashBal.textContent = h.currency + ': ' + MktSym + h.amount.toFixed(digits);
+                }
+            }
+            for (var i = 0; i < data.Holdings.length; i++) {
+                var h = data.Holdings[i];
+                <!--console.log(h.currency + ', ' + coinPick.value);-->
+                if (h.currency === coinPick.value) {
+                    altBal.textContent = coinPick.value + ': ' + h.amount;
+                }
+            }
+        })
+        .catch(error => function(error){
+            console.error(error);
+        });
+    };
+
+    function UpdatePrice() {
+        bestPrice.textContent = 'Hunting...';
+
+        var id = sessionStorage.getItem('customerId');
+        var formData = new FormData();
+        formData.append('CustomerID', id);
+        formData.append('Currency', coinPick.value);
+        formData.append('Side', sidePick.value);
+        formData.append('market_selection', GetMarketSelection());
+
+        fetch(infoUrl + 'priceinfo', {
+            method: 'post',
+            body: formData
+        })
+        .then(function(response) {
+            return response.json();
+        })
+        .then(function(data) {
+            if (GetMarketSelection() === 'USD') {
+                bestPrice.textContent = (data.best_price * Number(orderAmt.value) * 1.0035)
+                                        .toLocaleString('en-US', { style: 'currency', currency: 'USD',});
+            } else {
+                bestPrice.textContent = '฿' + (data.best_price * Number(orderAmt.value) * 1.0035)
+                                              .toLocaleString('en-US', { maximumFractionDigits: 5,});
+            }
+            LoadTVChart(data.exchange);
+        })
+        .catch(error => function(error){
+            console.error(error);
+        });
+    }
+
+    function SubmitTradeOrder() {
+        if (orderAmt.value > 0) {
+            var formData = new FormData(orderForm);
+            formData.append('CustomerID', sessionStorage.getItem('customerId'));
+            formData.append('market_selection', GetMarketSelection());
+
+            ShowTradeAlert('Trade Submitted', sidePick.value + ' ' + orderAmt.value + ' ' + coinPick.value);
+
+            console.log('fetching');
+            fetch(window.location, {
+                method: 'post',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(function(data) {
+                console.log(data);
+                console.log(data.message);
+                Notify(data);
+                ShowTradeAlert('Trade Update', data.message);
+                LoadBalances();
+            })
+            .catch(error => function(error){
+                console.error(error);
+            });
+        } else {
+            ShowTradeAlert('Hold On There', 'Please enter a trade amount greater than zero.')
+        }
+    }
+
+    function UpdateOrderBooks() {
+        UpdateOrderBook('buy');
+        UpdateOrderBook('sell');
+    }
+
+    function UpdateOrderBook(side) {
+        var formData = new FormData();
+        formData.append('CustomerID', sessionStorage.getItem('customerId'));
+        formData.append('Currency', coinPick.value);
+        formData.append('Side', side);
+        formData.append('market_selection', GetMarketSelection());
+
+        fetch(infoUrl + 'getorderbook', {
+            method: 'post',
+            body: formData
+        })
+        .then(function(response) {
+            return response.json();
+        })
+        .then(function(data) {
+            if (side === 'buy') {
+                LoadOrderBook(askBook, data.orderbook);
+            } else {
+                LoadOrderBook(bidBook, data.orderbook);
+            }
+        })
+        .catch(error => function(error){
+            console.error(error);
+        });
+    }
+
+    function LoadOrderBook(tbl, data) {
+        var headers = tbl.getElementsByTagName('th');
+        tbl = tbl.getElementsByTagName('tbody')[0];
+        var r = tbl.rows.length;
+        while (r--) {
+            tbl.deleteRow(r);
+        }
+
+        var decR = 0, decD = 0;
+        for (var i=0; i < data.length; i++) {
+            decR = Math.max(decR, data[i].rate.toString().replace(/^-?\d*\.?|0+$/g, '').length);
+            decD = Math.max(decD, data[i].quantity.toString().replace(/^-?\d*\.?|0+$/g, '').length);
+            // decR = Math.max(decR, data[i].rate.toString().length);
+            // decD = Math.max(decD, data[i].quantity.toString().length);
+        }
+        decR = Math.max(2, decR);
+        decD = Math.min(5, decD);
+
+        r = (tbl === bidBook) ? 0 : data.length - 1;
+        for (var i=0; i < data.length; i++) {
+            var row = tbl.insertRow(0);
+            row.insertCell(0);
+            row.insertCell(1).textContent = data[r].rate.toLocaleString('en-US', { style: 'decimal', minimumFractionDigits: decR });
+            row.insertCell(2).textContent = data[r].quantity.toFixed(decD);
+            (tbl === bidBook) ? r++ : r--;
+        }
+
+        tbl.parentElement.floatHead();
+
+        <!--var cols = row.getElementsByTagName('td');-->
+        <!--headers[0].children[0].style.right = cols[1].offsetWidth;-->
+        <!--headers[1].children[0].style.right = '0px';-->
+        <!--headers[0].children[0].style.width = cols[0].offsetWidth;-->
+        <!--headers[1].children[0].style.width = cols[1].offsetWidth;-->
+    }
+
+    function ShowTradeAlert(title, body) {
+        document.getElementById('tradeAlertTitle').textContent = title;
+        document.getElementById('tradeAlertBody').textContent = body;
+        if (body.includes('fail')) {
+            document.documentElement.style.setProperty('--alert-color', '#f00');
+        }
+        document.getElementById('tradeAlertBody').classList.add('alert');
+    }
+
+    function MarketClick(symbol) {
+        SetMarket(symbol);
+    }
+
+    function CoinClick(e) {
+        e = e || window.event;
+        var target = e.target || e.srcElement;
+        SetCoin(target.dataset.symbol);
+    }
+
+    function UpdateFormStyle() {
+        coinPick.className = 'cc ' + coinPick.value;
+        sidePick.style.color = sidePick.selectedIndex === 0 ? 'green' : 'red';
+    }
+
+    function HideChart() {
+        chart.style.visibility = 'hidden';
+    }
+
+    function LoadTVChart(exchange) {
+        new TradingView.widget({
+            "autosize": true,
+            "symbol": exchange + ":" + coinPick.value + GetMarketSelection(),
+            "interval": "D",
+            "timezone": "Etc/UTC",
+            "theme": "Light",
+            "style": "1",
+            "locale": "en",
+            "toolbar_bg": "#f1f3f6",
+            "enable_publishing": false,
+            "allow_symbol_change": true,
+            "hideideas": true,
+            "container_id": "tradingview_5f99e"
+        });
+        chart.style.visibility = 'visible';
+    };
+
+    function NewData() {
+        var formData = new FormData();
+        formData.append('CustomerID', sessionStorage.getItem('customerId'));
+        return formData;
+    }
+
+    coinPick.addEventListener('change', function() {
+        UpdateCoin();
+        sessionStorage.setItem('selectedCoin', coinPick.selectedIndex);
+        UpdateFormStyle();
+        UpdateOrderBooks();
+    });
+
+    sidePick.addEventListener('change', function() {
+        UpdatePrice();
+        sessionStorage.setItem('selectedSide', sidePick.selectedIndex);
+        UpdateFormStyle();
+    });
+
+    orderAmt.addEventListener('input', function() {
+        clearTimeout(delayTimer);
+        delayTimer = setTimeout(UpdatePrice, 500);
+    });
+
+    tradeSubmit.addEventListener('click', function(e) {
+        SubmitTradeOrder();
+    });
+
+    window.addEventListener("load", Init, false);
+</script>
+{% endblock %}

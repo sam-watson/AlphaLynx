@@ -1,0 +1,60 @@
+{% extends "SiteBase.html" %}
+
+{% block title %}Login{% endblock %}
+
+{% block head %}
+  {{ super() }}
+  <style>
+    .content {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    }
+    .banner {
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    .form-area {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    input {
+        border: 2px solid orange;
+        border-radius: 4px;
+        width: 50%;
+        margin: 10px;
+        padding: 3px;
+    }
+    .login-btn {
+        width: 20%;
+        color: #484948;
+    }
+  </style>
+{% endblock %}
+
+{% block body %}
+    <div class="content">
+      <picture class='banner' >
+        <source media="(min-width: 480px)" srcset="/static/DarkBanner.png">
+        <img src="/static/DarkFaceLogo.png" width="auto" height="135px">
+      </picture>
+    <!--<div class="container">-->
+      <div>
+        <form action="" method="post">
+          <h1>Please Log In to Your BitLynx Account</h1>
+          <div class="form-area">
+            <input class="form-fld" type="text" placeholder="Username" name="username" value="{{ request.form.username }}">
+            <input class="form-fld" type="password" placeholder="Password" name="password" value="{{ request.form.password }}">
+            <input class="login-btn btn btn-warning text-dark" type="submit" value="Login">
+          </div>
+        </form>
+      </div>
+      {% if error %}
+        <p class="error"><strong>Error:</strong> {{ error }}
+      {% endif %}
+    </div>
+{% endblock %}

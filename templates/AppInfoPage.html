@@ -1,0 +1,43 @@
+{% extends "AppNavBase.html" %}
+
+{% block head %}
+    {{ super() }}
+    <style>
+        .content {
+            overflow-y: auto;
+            padding-top: 20px;
+        }
+        .center-content {
+            display: flex;
+            flex-flow: column;
+            align-items: center;
+            min-width: 50%;
+        }
+
+        .title {
+            padding: 20px 20px;
+            margin-bottom: 0px;
+        }
+
+        .card {
+            padding: 0 20px 20px;
+        }
+        thead {
+            background-image: linear-gradient(-10deg, #1eff1e 20%, green 60%);
+            color: white;
+        }
+        tr:nth-child(even) {background-color: #f2f2f2;}
+
+    </style>
+{% endblock %}
+
+{% block content %}
+    {{ super() }}
+    <div class="container info-container">
+        <div class="row info-container">
+            <div class="col-lg-12 info-container">
+            {% block info %}{% endblock %}
+            </div>
+        </div>
+    </div>
+{% endblock %}

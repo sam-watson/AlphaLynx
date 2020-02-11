@@ -1,0 +1,200 @@
+REDSHIFT(1)                 General Commands Manual                REDSHIFT(1)
+
+[1mNAME[0m
+       redshift - set color temperature of display according to time of day
+
+[1mSYNOPSIS[0m
+       [1mredshift [22m[[1m-l [4m[22mLAT[24m[1m:[4m[22mLON[24m | [1m-l [4m[22mPROVIDER[24m[1m:[4m[22mOPTIONS[24m] [[1m-t [4m[22mDAY[24m[1m:[4m[22mNIGHT[24m] [[4mOPTIONS[24m...]
+
+[1mDESCRIPTION[0m
+       [1mredshift [22madjusts the color temperature of your screen according to your
+       surroundings. This may help your eyes hurt less or reduce the risk  for
+       delayed  sleep phase syndrome if you are working in front of the screen
+       at night.
+
+       The color temperature is set according to the position of  the  sun.  A
+       different  color  temperature  is  set during night and daytime. During
+       twilight and early morning, the color temperature transitions  smoothly
+       from  night  to  daytime temperature to allow your eyes to slowly adapt
+       over a period of about an hour. At night the color  temperature  should
+       be set to match the lamps in your room. This is typically a low temper‐
+       ature at around 3000K-4000K (default is 4500K).  During  the  day,  the
+       color temperature should match the light from outside, typically around
+       5500K-6500K (default is 6500K). The light has a higher  temperature  on
+       an overcast day.
+
+       In  addition  to  the  command-line tool [1mredshift[22m, the GUI [1mredshift-gtk[0m
+       provides an alternative interface that shows up as a notification  icon
+       in the desktop environment.
+
+[1mOPTIONS[0m
+       [1m-h     [22mDisplay help message.
+
+       [1m-v     [22mEnable verbose output.
+
+       [1m-V     [22mShow program version.
+
+       [1m-b [4m[22mDAY[24m[1m:[4m[22mNIGHT[0m
+              Screen brightness to apply (between 0.1 and 1.0).
+
+       [1m-c [4m[22mFILE[0m
+              Load settings from specified configuration file.
+
+       [1m-g [4m[22mR[24m[1m:[4m[22mG[24m[1m:[4m[22mB[0m
+              Additional gamma correction to apply.
+
+       [1m-l [4m[22mLAT[24m[1m:[4m[22mLON[0m
+              Your  current location, in degrees, given as floating point num‐
+              bers, towards north and east, with negative numbers representing
+              south and west, respectively.
+
+       [1m-l [4m[22mPROVIDER[24m[[1m:[4m[22mOPTIONS[24m]
+              Select provider for automatic location updates (Use [1m"-l list" [22mto
+              see available providers).
+
+       [1m-m [4m[22mMETHOD[24m[[1m:[4m[22mOPTIONS[24m]
+              Method to use to set color temperature (Use  [1m"-m  list"  [22mto  see
+              available methods).
+
+       [1m-o     [22mOne-shot  mode  (do  not continuously adjust color temperature).
+              Use this with the [1m-P [22moption to clear the  existing  gamma  ramps
+              before applying the new color temperature.
+
+       [1m-O [4m[22mTEMP[0m
+              One-shot manual mode (set color temperature).  Use this with the
+              [1m-P [22moption to clear the existing gamma ramps before applying  the
+              new color temperature.
+
+       [1m-p     [22mPrint mode (only print parameters and exit).
+
+       [1m-P     [22mReset existing gamma ramps before applying new color effect.
+
+       [1m-x     [22mReset mode (remove adjustment from screen).
+
+       [1m-r     [22mDisable fading between color temperatures.
+
+       [1m-t [4m[22mDAY[24m[1m:[4m[22mNIGHT[0m
+              Color temperature to set at daytime/night.
+
+       The  neutral temperature is 6500K. Using this value will not change the
+       color temperature of the display. Setting the color  temperature  to  a
+       value  higher than this results in more blue light, and setting a lower
+       value will result in more red light.
+
+       Default temperature values:
+
+              Daytime: 6500K, night: 4500K
+
+[1mCONFIGURATION FILE[0m
+       A configuration file with the  name  [4mredshift.conf[24m  can  optionally  be
+       placed in [4m~/.config/[24m. The file has standard INI format. General program
+       options are placed under the [1mredshift [22mheader, while options  for  loca‐
+       tion  providers  and  adjustment methods are placed under a header with
+       the name of that provider or method. General options are:
+
+       [1mtemp-day [22m= [4minteger[0m
+              Daytime temperature
+
+       [1mtemp-night [22m= [4minteger[0m
+              Night temperature
+
+       [1mfade [22m= [4m0[24m [4mor[24m [4m1[0m
+              Disable or enable fading between color  temperatures  when  Red‐
+              shift starts or stops
+
+       [1mbrightness-day [22m= [4m0.1-1.0[0m
+              Screen brightness at daytime
+
+       [1mbrightness-night [22m= [4m0.1-1.0[0m
+              Screen brightness at night
+
+       [1melevation-high [22m= [4mdecimal[0m
+              The solar elevation in degrees for the transition to daytime
+
+       [1melevation-low [22m= [4mdecimal[0m
+              The solar elevation in degrees for the transition to night
+
+       [1mdawn-time [22m= [4mHH[24m[1m:[4m[22mMM[24m[[1m-[4m[22mHH[24m[1m:[4m[22mMM[24m]
+              The custom time interval for the transition from night to day in
+              the morning.  When specified, the solar elevation  will  not  be
+              used  to  determine  the  current  daytime/night period. If this
+              option is set, dusk-time must also be specified.
+
+       [1mdusk-time [22m= [4mHH[24m[1m:[4m[22mMM[24m[[1m-[4m[22mHH[24m[1m:[4m[22mMM[24m]
+              The custom time interval for the transition from day to night in
+              the  evening.   When  specified, the solar elevation will not be
+              used to determine the  current  daytime/night  period.  If  this
+              option is set, dawn-time must also be specified.
+
+       [1mgamma [22m= [4mR[24m[1m:[4m[22mG[24m[1m:[4m[22mB[0m
+              Gamma adjustment to apply (day and night)
+
+       [1mgamma-day [22m= [4mR[24m[1m:[4m[22mG[24m[1m:[4m[22mB[0m
+              Gamma adjustment to apply at daytime
+
+       [1mgamma-night [22m= [4mR[24m[1m:[4m[22mG[24m[1m:[4m[22mB[0m
+              Gamma adjustment to apply at night
+
+       [1madjustment-method [22m= [4mname[0m
+              Select  adjustment method. Options for the adjustment method can
+              be given under the configuration file heading of the same name.
+
+       [1mlocation-provider [22m= [4mname[0m
+              Select location provider. Options for the location provider  can
+              be given under the configuration file heading of the same name.
+
+       Options  for  location providers and adjustment methods can be found in
+       the help output of the providers and methods.
+
+[1mEXAMPLE[0m
+       Example for Copenhagen, Denmark:
+
+              [1m$ [22mredshift -l 55.7:12.6 -t 5700:3600 -g 0.8 -m randr -v
+
+       An example configuration file with the same effect as the above command
+       line:
+
+              [[1mredshift[22m]
+              temp-day=5700
+              temp-night=3600
+              gamma=0.8
+              adjustment-method=randr
+              location-provider=manual
+
+              [[1mmanual[22m]
+              lat=55.7
+              lon=12.6
+
+[1mHOOKS[0m
+       Executables  (e.g.  scripts)  placed in folder [4m~/.config/redshift/hooks[0m
+       will be run when a certain event happens. The first  parameter  to  the
+       script  indicates  the  event  and further parameters may indicate more
+       details about the event. The event [1mperiod-changed [22mis indicated when the
+       period  changes  ([1mnight[22m,  [1mdaytime[22m, [1mtransition[22m). The second parameter is
+       the old period and the third is the new period. The event is also  sig‐
+       naled when Redshift starts up with the old period set to [1mnone[22m. Any dot‐
+       files in the folder are skipped.
+
+       A simple script to handle these events can be written like this:
+
+              #!/bin/sh
+              case [1m$1 [22min
+                  [1mperiod-changed[22m)
+                      exec notify-send "Redshift" "Period changed to [1m$3[22m"
+              esac
+
+[1mAUTHOR[0m
+       [1mredshift [22mwas written by Jon Lund Steffensen <jonlst@gmail.com>.
+
+       Both [1mredshift [22mand this manual page are released under the  GNU  General
+       Public License, version 3.
+
+[1mBUGS[0m
+       Please report bugs to <https://github.com/jonls/redshift/issues>
+
+[1mKNOWN ISSUES[0m
+       [1mredshift  [22mwill  not  affect the color of your cursor when your graphics
+       driver is configured to use hardware  cursors.  Some  graphics  drivers
+       have an option to disable hardware cursors.
+
+                                                                   REDSHIFT(1)

@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% block head %}
+    <title>
+        {% block title %}{% endblock %}
+    </title>
+
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="shortcut icon" type="image/png" href="/static/favicon.png">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+    <!--<script src='https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.js'></script>-->
+    <style>
+        :root {
+            --header-color: #101010;
+            --bg-color: #DEDAD1;
+            --bg-color2: #C4C1B9;
+            --card-color: white;
+            --text-color: black;
+            --hover-color: #FFEFE1;
+            --ticker-color: black;
+            --chart-color1: orange;
+        }
+        html, body {
+            min-height: 100vh;
+
+            <!--background: #d2d9e0; /* Old browsers */-->
+            <!--background: -moz-linear-gradient(top, #f4f6f9 0%, #bed1e8 40%, #abbedb 100%); /* FF3.6-15 */-->
+            <!--background: -webkit-linear-gradient(top, #f4f6f9 0%,#bed1e8 40%,#abbedb 100%); /* Chrome10-25,Safari5.1-6 */-->
+            <!--background: linear-gradient(to bottom, #f4f6f9 0%,#bed1e8 40%,#abbedb 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */-->
+            <!--filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f4f6f9', endColorstr='#abbedb',GradientType=0 ); /* IE6-9 */-->
+
+            background-color: var(--bg-color);
+            background-image: linear-gradient(-10deg, var(--bg-color2) 0%, var(--bg-color) 74%);
+        }
+
+        input, select {
+            border: 2px solid orange;
+            border-radius: 4px;
+            margin: 10px;
+            padding: 3px;
+        }
+        .card {
+            background-color: var(--card-color);
+        }
+        .title {
+            font-family: Arial , Helvetica, sans-serif;
+            font-weight: bold;
+        }
+
+    </style>
+    {% endblock head%}
+</head>
+<body>
+    {% block body %}
+
+    <script>
+        var userLang = navigator.language || navigator.userLanguage;
+        console.log(userLang);
+
+        var dollarFmt = new Intl.NumberFormat('en-US', {
+            style: 'currency',
+            currency: 'USD',
+            minimumFractionDigits: 2,
+        });
+
+        var cryptoFmt = new Intl.NumberFormat('en-US', {
+            style: 'decimal',
+            minimumFractionDigits: 1,
+            minimumSignificantDigits: 3,
+        });
+
+        function SetTheme(theme) {
+            if (theme == 'dark') {
+                document.documentElement.style.setProperty('--header-color', '#101010');
+                document.documentElement.style.setProperty('--bg-color', 'black');
+                document.documentElement.style.setProperty('--card-color', '#0F0F43');
+                document.documentElement.style.setProperty('--text-color', 'white');
+            }
+        }
+        function ToggleTheme() {
+            SetTheme('dark');
+            console.log('dark');
+        }
+    </script>
+
+    {% endblock body %}
+</body>
+</html>

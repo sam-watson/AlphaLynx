@@ -1,0 +1,17 @@
+{% extends "SiteBase.html" %}
+
+{% block title %}BitLynx Terms And Conditions{% endblock %}
+
+{% block head %}
+  {{ super() }}
+
+
+    <h1>Terms and Conditions</h1>
+    <br>
+    <br>
+    <p><a href="{{ url_for('LoginApp') }}">Return to Login</a></p>
+    <br>
+    <br>
+    <p><a href="{{ url_for('RegistrationApp') }}">Click Here to Register a New Account on BitLynx</a></p>
+
+{% endblock %}

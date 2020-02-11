@@ -1,0 +1,74 @@
+{% extends "AppInfoPage.html" %}
+
+{% block title %}News{% endblock %}
+
+{% set active_page = "news" %}
+
+{% block head %}
+    {{ super() }}
+    <style>
+        .article {
+            display: flex;
+            padding: 20px;
+        }
+        .article-header {
+            display: inline-block;
+            margin-right: 10px;
+        }
+        .news-icon {
+            height: 50px;
+            width: 50px;
+            overflow: hidden;
+        }
+        .news-icon > img {
+            height: 50px;
+        }
+        .article-body {
+            max-width: calc(100% - 80px);
+        }
+        .divider {
+            margin-left: 5%;
+            width: 90%;
+            border-bottom: 1px solid gray;
+        }
+        .title {
+            padding-top: 20px;
+        }
+
+    </style>
+{% endblock %}
+
+{% block info %}
+    {{ super() }}
+
+    <h2 class="title card">CRYPTO NEWS</h2>
+
+    <!--<script src="https://cointelegraph.com/news-widget"-->
+            <!--data-ct-widget-limit="50"-->
+            <!--data-ct-widget-theme="light"-->
+            <!--data-ct-widget-size="medium"-->
+            <!--data-ct-widget-images="true">-->
+    <!--</script>-->
+    <!--<hr/>-->
+
+    <div class="card">
+        {% for article in feed %}
+        <div class="article">
+            <div class="article-header">
+                <div class="news-icon"><img src="{{article.feed.image.href}}" alt="{{article.feed.title}}"></div>
+                <!--<h4>{{article.feed.title}}</h4>-->
+            </div>
+            <div class="article-body">
+                <b><a href="{{article.link}}" target="_blank">{{article.title}}</a></b>
+
+                <br/>
+                <i>{{article.published}}</i><br/>
+                {{article.summary|safe}}
+            </div>
+        </div>
+        <div class="divider"></div>
+        {% endfor %}
+    </div>
+
+
+{% endblock %}

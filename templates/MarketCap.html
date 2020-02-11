@@ -1,0 +1,24 @@
+{% extends "AppNavBase.html" %}
+
+{% block title %}Market Overview{% endblock %}
+
+{% set active_page = "research" %}
+
+{% block head %}
+    {{ super() }}
+    <style>
+        iframe {
+            position: absolute;
+            height: 100%;
+            width: 100%;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    {{ super() }}
+    <h1>Market Research</h1>
+
+    <!--<iframe src="https://coinmarketcap.com/"></iframe>-->
+
+{% endblock %}
