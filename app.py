@@ -22,8 +22,8 @@ if 'Development' in os.environ['APP_SETTINGS']:
 else:
     db_url = os.environ['DATABASE_URL']
     if 'Production' in os.environ['APP_SETTINGS']:
-        # baseURL = "https://bitlynx.herokuapp.com/"
-        baseURL = "https://damp-brook-82840.herokuapp.com/"
+        baseURL = "https://bitlynx.herokuapp.com/"
+        # baseURL = "https://damp-brook-82840.herokuapp.com/"
     elif 'Staging' in os.environ['APP_SETTINGS']:
         baseURL = 'https://bitlynx-staging.herokuapp.com/'
 
