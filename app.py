@@ -880,7 +880,7 @@ def PositionsApp():
 def TradeApp():
     # api url
     bestprice = str(0)
-    currencies = utils.GetCurrencies()
+    currencies = []#utils.GetCurrencies()
     with open('./static/webfont/cryptocoins-map.json') as json_data:
         currencyChars = json.load(json_data)
     if 'customerid' in session:
